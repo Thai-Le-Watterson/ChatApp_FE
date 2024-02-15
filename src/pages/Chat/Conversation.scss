@@ -9,7 +9,7 @@ $height_serach: 40px;
 .conversations-container {
   padding-top: $padding;
   padding-bottom: $padding;
-  background-color: $my-bg-1;
+  background-color: #e9ecef;
 
   .title {
     height: $height_title;
@@ -58,14 +58,14 @@ $height_serach: 40px;
 
   .list_conversation {
     // height: calc(100vh - calc($padding + calc($height_title + $height_serach)));
-    background-color: $my-bg-1;
+    background-color: #e9ecef;
     overflow: auto;
     box-sizing: border-box;
 
     .conversation {
       display: block;
       text-decoration: none;
-      background-color: $my-bg-1;
+      background-color: #e9ecef;
       border-color: $gray-400;
       cursor: pointer;
       transition: all linear 0.1s;
