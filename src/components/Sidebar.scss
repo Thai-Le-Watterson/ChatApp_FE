@@ -51,12 +51,12 @@
     border-radius: 0;
     border: none;
     border-top: 2px solid #0dcaf0;
-    border-bottom: 2px solid var($my-color);
+    border-bottom: 2px solid #0dcaf0;
 
     &:hover {
       cursor: pointer;
-      background-color: $my-bg-2;
-      color: $my-color;
+      background-color: #6c757d;
+      color: #0dcaf0;
     }
   }
 }
