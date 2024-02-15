@@ -51,7 +51,7 @@
     border-radius: 0;
     border: none;
     border-top: 2px solid #0dcaf0;
-    border-bottom: 2px solid $my-color;
+    border-bottom: 2px solid var($my-color);
 
     &:hover {
       cursor: pointer;
