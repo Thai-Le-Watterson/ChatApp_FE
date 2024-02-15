@@ -1,0 +1,114 @@
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+@import "../../../node_modules/bootstrap/scss/mixins";
+
+$padding: 24px;
+$height_title: 40px;
+$height_serach: 40px;
+
+.conversations-container {
+  padding-top: $padding;
+  padding-bottom: $padding;
+  background-color: $my-bg-1;
+
+  .title {
+    height: $height_title;
+
+    ._btn {
+      background-color: $cyan;
+      color: #fff;
+      font-weight: bold;
+      border: 2px solid $cyan !important;
+
+      &:hover {
+        background-color: transparent;
+        color: $cyan;
+      }
+    }
+
+    .plus_icon {
+      color: $cyan;
+      transition: all linear 0.2s;
+
+      &:hover {
+        cursor: pointer;
+        background-color: $cyan;
+        color: #fff;
+        border-radius: 4px;
+      }
+    }
+  }
+
+  .search-container {
+    position: relative;
+    height: $height_serach;
+
+    .search_input {
+      padding-right: 36px;
+    }
+
+    .search_icon {
+      color: $gray-500;
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  .list_conversation {
+    // height: calc(100vh - calc($padding + calc($height_title + $height_serach)));
+    background-color: $my-bg-1;
+    overflow: auto;
+    box-sizing: border-box;
+
+    .conversation {
+      display: block;
+      text-decoration: none;
+      background-color: $my-bg-1;
+      border-color: $gray-400;
+      cursor: pointer;
+      transition: all linear 0.1s;
+
+      &.active {
+        background-color: #fff;
+        position: relative;
+
+        &::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 1px;
+          border-left: 4px solid $cyan;
+        }
+      }
+
+      &:hover {
+        background-color: $gray-100;
+      }
+
+      .avatar {
+        $width: 50px;
+        width: $width;
+        height: $width;
+        border-radius: 50%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      .message-container {
+        width: calc(100% - 50px);
+        color: #000;
+
+        .message {
+          display: -webkit-box;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+        }
+      }
+    }
+  }
+}

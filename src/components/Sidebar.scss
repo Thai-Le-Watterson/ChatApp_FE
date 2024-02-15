@@ -1,0 +1,75 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/mixins";
+
+.sidebar-container {
+  position: absolute;
+  inset: 0;
+  // top: 0;
+  // bottom: 0;
+
+  .avatar {
+    $width: 50px;
+    width: $width;
+    height: $width;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 50%;
+    margin: 0 0 10px 0;
+  }
+
+  .side-item {
+    position: relative;
+    transition: all linear 0.1s;
+
+    &:hover {
+      background-color: #585e64;
+    }
+
+    &.active {
+      background-color: $gray-700;
+      color: $cyan !important;
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 1px;
+        top: 0;
+        bottom: 0;
+        border-left: 3px solid $cyan;
+      }
+    }
+  }
+
+  .button {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    color: #fff;
+    border-radius: 0;
+    border: none;
+    border-top: 2px solid $my-color;
+    border-bottom: 2px solid $my-color;
+
+    &:hover {
+      cursor: pointer;
+      background-color: $my-bg-2;
+      color: $my-color;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-container {
+    display: flex;
+    height: fit-content;
+    padding: 0 !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  }
+}
