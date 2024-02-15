@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const serverURL = "https://chatapp-a3q1.onrender.com";
+
 let instanceAxios = axios.create({
-  baseURL: "http://localhost:8081/api/",
+  baseURL: serverURL || "http://localhost:8081/api/",
   timeout: 3000,
   withCredentials: true,
 });
