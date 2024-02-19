@@ -25,7 +25,7 @@ function Chat() {
     window.addEventListener("resize", function (e) {
       setWindowScreen((e.target as Window).innerWidth);
     });
-  }, [params.idRoom, conversations.length]);
+  }, [params.idRoom, conversations?.length]);
 
   const getConversations = async () => {
     const data = await conversationService.getConversations(user?._id || null);
@@ -33,7 +33,7 @@ function Chat() {
   };
 
   const getConversationSeleted = () => {
-    const conversationSeleted = conversations.find((conversationItem) => {
+    const conversationSeleted = conversations?.find((conversationItem) => {
       return conversationItem._id.toString() === params.idRoom;
     });
     setConversation(conversationSeleted || null);
