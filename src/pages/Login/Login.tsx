@@ -12,7 +12,6 @@ function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
-  const user = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
   const handleLogin = async () => {
@@ -22,6 +21,8 @@ function Login() {
     dispatch(login(userData));
     navigate(`/${userData.user?._id}`);
   };
+
+  console.log("ok");
 
   return (
     <section className="vh-100">

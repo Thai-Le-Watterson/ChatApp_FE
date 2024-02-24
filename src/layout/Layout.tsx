@@ -21,9 +21,9 @@ function Layout() {
   const handleSetHeightOulet = () => {
     const outlet = document.querySelector(".outlet") as HTMLElement;
     if (window.innerWidth < 768) {
-      outlet.style.height = "calc(100vh - 3rem)";
+      outlet && (outlet.style.height = "calc(100vh - 3rem)");
     } else {
-      outlet.style.height = "100vh";
+      outlet && (outlet.style.height = "100vh");
     }
   };
 
