@@ -5,3 +5,26 @@
   height: 1px;
   background: #eee;
 }
+
+.accounts {
+  top: 0;
+  right: 0;
+  padding: 20px;
+  box-shadow: 1px 1px 4px #c7c7c7;
+  border-radius: 8px;
+  background-color: #fff;
+
+  table {
+    tr:nth-child(2n) {
+      border-bottom: 1px solid #d1d1d1;
+
+      td {
+        padding-bottom: 12px;
+      }
+    }
+
+    td {
+      padding: 0 8px;
+    }
+  }
+}

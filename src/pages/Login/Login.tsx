@@ -23,7 +23,7 @@ function Login() {
   };
 
   return (
-    <section className="vh-100">
+    <section className="vh-100 position-relative">
       <div className="container py-5 h-100">
         <div className="row d-flex align-items-center justify-content-center h-100">
           <div className="col-md-8 col-lg-7 col-xl-6">
@@ -84,6 +84,27 @@ function Login() {
             </form>
           </div>
         </div>
+      </div>
+      <div className="accounts position-absolute">
+        <h2 className="text-center">Accounts</h2>
+        <table>
+          <tr>
+            <td>Email:</td>
+            <td>goku@gmail.com</td>
+          </tr>
+          <tr>
+            <td>Password:</td>
+            <td>123123</td>
+          </tr>
+          <tr>
+            <td>Email:</td>
+            <td>momonga@gmail.com</td>
+          </tr>
+          <tr>
+            <td>Password:</td>
+            <td>123123</td>
+          </tr>
+        </table>
       </div>
     </section>
   );
