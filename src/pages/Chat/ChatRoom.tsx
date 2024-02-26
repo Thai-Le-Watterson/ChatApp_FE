@@ -7,7 +7,7 @@ import { UsersContext, MessagesContext } from "../../providers";
 import messageService from "../../services/messageService";
 import socket from "../../socket";
 
-import type { ConversationType } from "../../interfaces";
+import type { ConversationType, Message } from "../../interfaces";
 
 import "./ChatRoom.scss";
 
@@ -18,17 +18,18 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
 }) => {
   const [message, setMessage] = useState<string>("");
   const { users, handleGetUsers } = useContext(UsersContext);
-  const { messages, handleGetMessages } = useContext(MessagesContext);
+  const { messages, handleGetMessages, setMessages } =
+    useContext(MessagesContext);
   const user = useAppSelector((state) => state.user.user);
   const params = useParams();
 
   useEffect(() => {
-    // handleSetHeightMessageCtn();
     handleGetMessages(params.idRoom || "");
     handleGetUsers(params.idRoom || "");
 
-    socket.on("send-message", (message: string) => {
-      handleGetMessages(params.idRoom || "");
+    socket.on("send-message", (message: Message) => {
+      // handleGetMessages(params.idRoom || "");
+      setMessages([message, ...messages]);
       setMessage("");
     });
 
@@ -142,15 +143,17 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
           );
         })}
       </ListGroup>
-      <div className="room_input px-4 py-4 d-flex flex-column align-items-end">
-        <textarea
-          className="input_message form-control w-100"
+      <div className="room_input px-4 py-4 d-flex justify-content-between gap-2 align-items-center">
+        <input
+          type="text"
+          className="input_message form-control w-70"
           placeholder="Type here..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => e.code === "Enter" && handleSendMessage(message)}
         />
         <button
-          className="btn btn_send mt-2"
+          className="btn btn_send w-20"
           onClick={() => handleSendMessage(message)}
         >
           Send

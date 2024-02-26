@@ -22,8 +22,6 @@ function Login() {
     navigate(`/${userData.user?._id}`);
   };
 
-  console.log("ok");
-
   return (
     <section className="vh-100">
       <div className="container py-5 h-100">

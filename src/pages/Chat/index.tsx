@@ -5,9 +5,10 @@ import { useAppSelector } from "../../hook";
 import conversationService from "../../services/conversationService";
 import type { ConversationType } from "../../interfaces";
 
+import { MessagesProvider } from "../../providers";
 import ChatRoom from "./ChatRoom";
 import Conversation from "./Conversation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Chat() {
   const [conversations, setConversations] = useState<ConversationType[]>([]);

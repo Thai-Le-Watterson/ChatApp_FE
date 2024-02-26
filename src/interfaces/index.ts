@@ -34,7 +34,7 @@ export type Message = {
 export type MessageContext = {
   messages: Message[];
   handleGetMessages: (idRoom: string) => void;
-  handlePushMessage: (message: Message) => void;
+  setMessages: (messages: Message[]) => void;
 };
 
 export type ConversationType = {

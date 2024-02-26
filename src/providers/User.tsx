@@ -42,7 +42,7 @@ const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const handleGetUsers = async (idRoom: string) => {
     const data = await userService.getUsersInConversation(idRoom);
-    setUsers(data.users);
+    data?.users && setUsers(data.users);
   };
 
   return (

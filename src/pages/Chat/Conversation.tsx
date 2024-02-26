@@ -77,7 +77,7 @@ const Conversation: React.FC<{
   return (
     <Container className="conversations-container px-0">
       <div className="title d-flex justify-content-around align-items-center">
-        <span className="">Conversations (3)</span>
+        <span className="">Conversations ({conversations?.length || 0})</span>
         {/* <button className="btn _btn">New</button> */}
         <i className="plus_icon py-2 px-3 fa-solid fa-plus"></i>
       </div>
