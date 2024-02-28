@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Container } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useAppSelector } from "../../hook";
 
@@ -79,7 +80,11 @@ const Conversation: React.FC<{
       <div className="title d-flex justify-content-around align-items-center">
         <span className="">Conversations ({conversations?.length || 0})</span>
         {/* <button className="btn _btn">New</button> */}
-        <i className="plus_icon py-2 px-3 fa-solid fa-plus"></i>
+        {/* <i className="plus_icon py-2 px-3 fa-solid fa-plus"></i> */}
+        <FontAwesomeIcon
+          icon="plus"
+          className="plus_icon py-2 px-3"
+        ></FontAwesomeIcon>
       </div>
       <div className="search-container px-3">
         <input
