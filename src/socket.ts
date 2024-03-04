@@ -1,9 +1,10 @@
 import { io } from "socket.io-client";
 
-// const serverURL = "https://chatapp-a3q1.onrender.com";
 const serverURL =
-  process.env.NODE_ENV == "production" ? process.env.REACT_APP_SERVER_URL : "";
+  process.env.REACT_APP_NODE_ENV == "production"
+    ? process.env.REACT_APP_SERVER_URL
+    : process.env.REACT_APP_SERVER_LOCAL;
 
-const socket = io(serverURL || "http://localhost:8081");
+const socket = io();
 
 export default socket;
