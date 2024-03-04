@@ -43,4 +43,21 @@ export type ConversationType = {
   avatar: string;
   lastMessaged: string;
   lastMemberSendMessaged: number;
+  membersId: number[];
+  type: string;
+};
+
+export type ConversationStateSlice = {
+  conversations: ConversationType[] | null;
+};
+
+export type ResponseFriendRequestType = "ALW" | "DEN";
+
+export type FriendRequestType = {
+  _id: number;
+  senderId: number;
+  receiverId: number;
+  status: string;
+  senderName: string;
+  senderAvatar: string;
 };

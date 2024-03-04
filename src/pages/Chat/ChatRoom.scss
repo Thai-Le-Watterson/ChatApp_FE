@@ -180,6 +180,14 @@
     .message {
       border: none;
 
+      &:hover {
+        .message_infor {
+          .btn-delete {
+            display: block;
+          }
+        }
+      }
+
       .message_avatar {
         $width: 50px;
         width: $width;
@@ -197,7 +205,25 @@
         background-color: #f8f8f8;
         display: flex;
         flex-direction: column;
+        position: relative;
         // align-items: flex-end;
+
+        .btn-delete {
+          display: none;
+          position: absolute;
+          top: 50%;
+          left: -4px;
+          transform: translate(-100%, -50%);
+          color: red;
+          padding: 8px 14px;
+          border-radius: 6px;
+          transition: all linear 0.1s;
+
+          &:hover {
+            background-color: rgba($color: #000000, $alpha: 0.05);
+            cursor: pointer;
+          }
+        }
 
         .user_name {
           color: #a5a5a5;
@@ -233,6 +259,31 @@
       &:hover {
         color: $cyan;
         background-color: #fff;
+      }
+    }
+  }
+}
+
+.modal-friends-list {
+  .friends-list {
+    padding: 0;
+
+    .friend {
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+
+      .avatar {
+        $width: 50px;
+        width: $width;
+        height: $width;
+        display: inline-block;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        border-radius: 50%;
       }
     }
   }

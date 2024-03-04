@@ -1,9 +1,12 @@
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Container } from "react-bootstrap";
+import { Button, Container, InputGroup, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { useAppSelector } from "../../hook";
+import { avatars } from "../../util/imageDefault";
+import { conversationService } from "../../services";
 
 import type { ConversationType } from "../../interfaces";
 
@@ -13,6 +16,9 @@ const Conversation: React.FC<{
   conversations: ConversationType[];
 }> = ({ conversations }) => {
   // const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [isShowModal, setIsShowModal] = useState<boolean>(false);
+  const [avatarSelected, setAvatarSelected] = useState<string>("");
+  const [groupName, setGroupName] = useState<string>("");
   const params = useParams();
   const user = useAppSelector((state) => state.user.user);
 
@@ -75,6 +81,15 @@ const Conversation: React.FC<{
         ).toString() + "px";
   };
 
+  const handleCreateGroup = async () => {
+    await conversationService.createGroup(
+      groupName,
+      avatarSelected,
+      user?._id || -1
+    );
+    setIsShowModal(false);
+  };
+
   return (
     <Container className="conversations-container px-0">
       <div className="title d-flex justify-content-around align-items-center">
@@ -82,8 +97,9 @@ const Conversation: React.FC<{
         {/* <button className="btn _btn">New</button> */}
         {/* <i className="plus_icon py-2 px-3 fa-solid fa-plus"></i> */}
         <FontAwesomeIcon
-          icon="plus"
+          icon={faPlus}
           className="plus_icon py-2 px-3"
+          onClick={() => setIsShowModal(true)}
         ></FontAwesomeIcon>
       </div>
       <div className="search-container px-3">
@@ -124,8 +140,56 @@ const Conversation: React.FC<{
           );
         })}
       </nav>
+      <Modal
+        className="modal-group"
+        show={isShowModal}
+        onHide={() => setIsShowModal(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Create Group</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <label className="title" htmlFor="">
+            Avatar
+          </label>
+          <ul className="avatars">
+            {avatars &&
+              avatars.map((avatar, index) => {
+                return (
+                  <li
+                    key={`avatar-def-${index}`}
+                    className={`avatar ${
+                      avatar === avatarSelected && "selected"
+                    }`}
+                    style={{
+                      backgroundImage: `url(${avatar})`,
+                    }}
+                    onClick={() => setAvatarSelected(avatar)}
+                  ></li>
+                );
+              })}
+          </ul>
+          <label className="title" htmlFor="group-name">
+            Group name
+          </label>
+          <input
+            id="group-name"
+            type="text"
+            value={groupName}
+            onChange={(e) => setGroupName(e.target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setIsShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="info" onClick={() => handleCreateGroup()}>
+            Create
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
 
-export default Conversation;
+export default React.memo(Conversation);

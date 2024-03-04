@@ -1,0 +1,23 @@
+.bar-container {
+  overflow: auto;
+
+  .contact-option {
+    display: block;
+    color: #333;
+    background-color: #fff;
+    text-decoration: none;
+    padding: 10px 30px;
+    font-weight: 500;
+    text-transform: capitalize;
+    transition: all linear 0.1s;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($color: #000000, $alpha: 0.1);
+    }
+
+    &.active {
+      background-color: #d9f9ff;
+    }
+  }
+}

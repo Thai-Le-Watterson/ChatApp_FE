@@ -25,6 +25,14 @@ const messageService = {
       console.log("Error: ", err);
     }
   },
+  deleteMessage: async (messageId: number) => {
+    try {
+      const res = await instanceAxios.delete(`/message?messageId=${messageId}`);
+      return res.data.errCode;
+    } catch (e) {
+      console.log("messageService - deleteMessage func: ", e);
+    }
+  },
 };
 
 export default messageService;

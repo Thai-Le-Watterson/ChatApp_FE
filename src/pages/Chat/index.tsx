@@ -1,22 +1,24 @@
 import { Container, Row, Col } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 
-import { useAppSelector } from "../../hook";
+import { useAppDispatch, useAppSelector } from "../../hook";
 import conversationService from "../../services/conversationService";
 import type { ConversationType } from "../../interfaces";
+import { loadConversations } from "../../store/slices/conversationsSlice";
 
-import { MessagesProvider } from "../../providers";
 import ChatRoom from "./ChatRoom";
 import Conversation from "./Conversation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 function Chat() {
-  const [conversations, setConversations] = useState<ConversationType[]>([]);
+  // const [conversations, setConversations] = useState<ConversationType[]>([]);
   const [conversation, setConversation] = useState<ConversationType | null>(
     null
   );
   const [windowScreen, setWindowScreen] = useState(window.innerWidth);
   const user = useAppSelector((state) => state.user.user);
+  const conversations = useAppSelector((state) => state.conversations);
+  const dispatch = useAppDispatch();
   const params = useParams();
 
   useEffect(() => {
@@ -30,7 +32,8 @@ function Chat() {
 
   const getConversations = async () => {
     const data = await conversationService.getConversations(user?._id || null);
-    setConversations(data.conversations);
+    dispatch(loadConversations(data.conversations));
+    // setConversations(data.conversations);
   };
 
   const getConversationSeleted = () => {
@@ -63,6 +66,7 @@ function Chat() {
       )
     );
   };
+
   return (
     <Container>
       <Row>

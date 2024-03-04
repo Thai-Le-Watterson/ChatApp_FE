@@ -1,18 +1,38 @@
-import React, { useState, useContext, useEffect } from "react";
-import { ListGroup } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
+import { Button, FormCheck, ListGroup, Modal } from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
-import { useAppSelector } from "../../hook";
-import { UsersContext, MessagesContext } from "../../providers";
+import {
+  conversationService,
+  messageService,
+  userService,
+} from "../../services";
+import { useAppDispatch, useAppSelector } from "../../hook";
+import { UsersContext } from "../../providers";
 import socket from "../../socket";
+import { loadMessages, addMessage } from "../../store/slices/messagesSlice";
 
-import type { ConversationType, Message } from "../../interfaces";
+import type { ConversationType, Message, User } from "../../interfaces";
 
 import "./ChatRoom.scss";
 
 const $: JQueryStatic = require("jquery");
 const _ = require("lodash");
+type MembersIdSeletedType = {
+  memberId: number;
+  avatar: string;
+  name: string;
+  selected: boolean;
+};
 
 const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
   conversation,
@@ -20,30 +40,54 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
   const [message, setMessage] = useState<string>("");
   const [isOpenRoomInfor, setIsOpenRoomInfor] = useState<boolean>(false);
   const [isOpenMemberList, setIsOpenMemberList] = useState<boolean>(true);
+  const [isShowFriendModel, setIsShowFriendModel] = useState<boolean>(false);
+  const [allUsersSendMessInGR, setAllUsersSendMessInGR] = useState<User[]>([]);
+  const [membersIdSelected, setMembersIdSelected] = useState<
+    MembersIdSeletedType[]
+  >([]);
   const { users, handleGetUsers } = useContext(UsersContext);
-  const { messages, handleGetMessages, setMessages } =
-    useContext(MessagesContext);
+  const messages = useAppSelector((state) => state.messages);
+  const conversations = useAppSelector((state) => state.conversations);
   const user = useAppSelector((state) => state.user.user);
+  const dispatch = useAppDispatch();
   const params = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    handleGetMessages(params.idRoom || "");
+    handleGetMessages();
     handleGetUsers(params.idRoom || "");
-    localStorage.setItem("dateMessage", "");
+    handleGetAllUserSendMess();
+    loadMembersIdSelected();
 
     socket.on("send-message", (message: Message) => {
-      // handleGetMessages(params.idRoom || "");
-      setMessages([message, ...messages]);
+      if (params?.idRoom == message.conversationId.toString()) {
+        dispatch(addMessage(message));
+      }
       setMessage("");
     });
 
     handleSetHeightChatroom();
   }, [params.idRoom]);
 
+  const loadMembersIdSelected = () => {
+    const arrMembersId: MembersIdSeletedType[] = [];
+
+    conversations.forEach((conversationItem) => {
+      if (conversationItem?.type === "PV") {
+        const objMember = {
+          memberId:
+            conversationItem.membersId.find((id) => id !== user?._id) || -1,
+          avatar: conversationItem.avatar,
+          name: conversationItem.name,
+          selected: false,
+        };
+        objMember.memberId > 0 && arrMembersId.push(objMember);
+      }
+    });
+    setMembersIdSelected(arrMembersId);
+  };
+
   const handleSetHeightChatroom = () => {
-    const chatRoomContainer = document.querySelector(
-      ".chat_room-container"
-    ) as HTMLInputElement;
     const listMessage = document.querySelector(
       ".list_message"
     ) as HTMLInputElement;
@@ -61,26 +105,21 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
       ).toString() + "px";
   };
 
-  /*const handleSendMessage = async (content: string) => {
-    console.log({
-      user: user?._id,
-      conversation: conversation?._id,
-      message,
-    });
+  const handleGetAllUserSendMess = async () => {
+    const data = await userService.getUsersInConversation(
+      conversation?._id.toString() || "",
+      "true"
+    );
 
-    if (
-      user?._id !== undefined &&
-      conversation?._id !== undefined &&
-      message !== ""
-    ) {
-      const data = await messageService.sendMessages(
-        user?._id,
-        conversation?._id,
-        content
-      );
-      console.log("data: ", data);
-    }
-  };*/
+    setAllUsersSendMessInGR(data?.users || []);
+  };
+
+  const handleGetMessages = useCallback(async () => {
+    const idRoom = params.idRoom || "";
+    const data = await messageService.getMessages(idRoom);
+    // data?.messages && setMessages(data.messages));
+    data?.messages && dispatch(loadMessages(data.messages));
+  }, [params.idRoom]);
 
   const handleSendMessage = async (content: string) => {
     socket.emit("send-message", {
@@ -88,6 +127,11 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
       conversationId: conversation?._id,
       content,
     });
+  };
+
+  const handleDeleteMessage = async (messageId: number) => {
+    await messageService.deleteMessage(messageId);
+    handleGetMessages();
   };
 
   const handleShowHideRoomInfor = (state: boolean) => {
@@ -121,20 +165,6 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
     isOpen ? memberList.slideDown(duration) : memberList.slideUp(duration);
   };
 
-  const handleGetDateOfMessage = (date: string) => {
-    if (!localStorage.getItem("dateMessage")) {
-      localStorage.setItem("dateMessage", date);
-      return "";
-    } else if (localStorage.getItem("dateMessage") !== date) {
-      const datePrevious = localStorage.getItem("dateMessage");
-      localStorage.setItem("dateMessage", date);
-
-      return datePrevious;
-    }
-
-    return "";
-  };
-
   const checkPointShowDate = (date: Date, index: number) => {
     const nextDate = new Date(messages[index + 1]?.createdAt);
 
@@ -145,6 +175,33 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
     }
 
     return false;
+  };
+
+  const handleOutGroup = async () => {
+    await conversationService.outGroup(user?._id, conversation?._id);
+    navigate(`/${user?._id}`);
+  };
+
+  const handleDeleteGroup = async () => {
+    await conversationService.deleteGroup(conversation?._id);
+    navigate(`/${user?._id}`);
+  };
+
+  const handleAddMember = async () => {
+    const dataReq: number[] = [];
+    membersIdSelected.forEach((value) => {
+      if (value.selected) dataReq.push(value.memberId);
+    });
+
+    await conversationService.addUsersToGroup(dataReq, conversation?._id);
+    setIsShowFriendModel(false);
+    setIsOpenRoomInfor(false);
+    setMembersIdSelected(
+      membersIdSelected.map((mem) => {
+        return { ...mem, selected: false };
+      })
+    );
+    handleGetUsers(params.idRoom || "");
   };
 
   return (
@@ -159,74 +216,153 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
           ></div>
           <div>
             <span className="room_name">{conversation?.name}</span>
-            <p className="members_count">{users?.length || 0} members</p>
+            {conversation?.type === "GR" && (
+              <p className="members_count">{users?.length || 0} members</p>
+            )}
           </div>
         </div>
-        <div className="room_infor-container">
-          <FontAwesomeIcon
-            icon="bars"
-            className="bars_icon"
-            onClick={() => handleShowHideRoomInfor(true)}
-          ></FontAwesomeIcon>
-          {isOpenRoomInfor && (
-            <div className="overlay">
-              <div className="room_infor">
-                <FontAwesomeIcon
-                  icon="bars"
-                  className="bars_icon"
-                  onClick={() => handleShowHideRoomInfor(false)}
-                ></FontAwesomeIcon>
-                <div className="text-center">
-                  <div
-                    className="group_avatar"
-                    style={{ backgroundImage: `url(${conversation?.avatar})` }}
-                  ></div>
-                  <p>{conversation?.name}</p>
-                </div>
-                <h6
-                  style={{ cursor: "pointer" }}
-                  onClick={() => handleShowHideMemberList(!isOpenMemberList)}
-                >
-                  Members list
-                  {/* <i className="fa-solid fa-caret-down px-2"></i> */}
-                  <FontAwesomeIcon
-                    icon="caret-down"
-                    className="px-2"
-                  ></FontAwesomeIcon>
-                </h6>
-                <ul className="members_list">
-                  <button className="button">
-                    <FontAwesomeIcon
-                      icon="plus"
-                      className="px-2"
-                    ></FontAwesomeIcon>
-                    Add member
-                  </button>
-                  {users?.map((user) => {
+        {conversation?.type === "GR" && (
+          <>
+            <Modal
+              show={isShowFriendModel}
+              onHide={() => setIsShowFriendModel(false)}
+              className="modal-friends-list"
+            >
+              <Modal.Header>
+                <Modal.Title>Friends List</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <ul className="friends-list">
+                  {membersIdSelected.map((item, index) => {
                     return (
                       <li
-                        key={"member-" + user._id}
-                        className="d-flex gap-2 my-3 align-items-center"
+                        key={`choose-friend${item.memberId}`}
+                        className="friend"
                       >
-                        <div
-                          className="avatar"
-                          style={{ backgroundImage: `url(${user?.avatar})` }}
-                        ></div>
-                        {user.fullName}
+                        <div className="d-flex align-items-center gap-2">
+                          <div
+                            className="avatar"
+                            style={{ backgroundImage: `url(${item.avatar})` }}
+                          ></div>
+                          <span className="name">{item.name}</span>
+                        </div>
+                        <FormCheck
+                          value={item.memberId}
+                          checked={item.selected}
+                          onChange={(e) =>
+                            setMembersIdSelected(
+                              membersIdSelected.map((mem) => {
+                                if (mem.memberId === item.memberId)
+                                  return { ...mem, selected: e.target.checked };
+                                return mem;
+                              })
+                            )
+                          }
+                        ></FormCheck>
                       </li>
                     );
                   })}
                 </ul>
-                <div className="foot_room-infor">
-                  <button className="btn_out">
-                    Out Group{" "}
-                    <FontAwesomeIcon icon="arrow-right-from-bracket" />
-                  </button>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setIsShowFriendModel(false)}
+                >
+                  Cancel
+                </Button>
+                <Button variant="info" onClick={() => handleAddMember()}>
+                  Add
+                </Button>
+              </Modal.Footer>
+            </Modal>
+            <div className="room_infor-container">
+              <FontAwesomeIcon
+                icon="bars"
+                className="bars_icon"
+                onClick={() => handleShowHideRoomInfor(true)}
+              ></FontAwesomeIcon>
+              {isOpenRoomInfor && (
+                <div className="overlay">
+                  <div className="room_infor">
+                    <FontAwesomeIcon
+                      icon="bars"
+                      className="bars_icon"
+                      onClick={() => handleShowHideRoomInfor(false)}
+                    ></FontAwesomeIcon>
+                    <div className="text-center">
+                      <div
+                        className="group_avatar"
+                        style={{
+                          backgroundImage: `url(${conversation?.avatar})`,
+                        }}
+                      ></div>
+                      <p>{conversation?.name}</p>
+                    </div>
+                    <h6
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        handleShowHideMemberList(!isOpenMemberList)
+                      }
+                    >
+                      Members list
+                      {/* <i className="fa-solid fa-caret-down px-2"></i> */}
+                      <FontAwesomeIcon
+                        icon="caret-down"
+                        className="px-2"
+                      ></FontAwesomeIcon>
+                    </h6>
+                    <ul className="members_list">
+                      <button
+                        className="button"
+                        onClick={() => setIsShowFriendModel(true)}
+                      >
+                        <FontAwesomeIcon
+                          icon="plus"
+                          className="px-2"
+                        ></FontAwesomeIcon>
+                        Add member
+                      </button>
+                      {users?.map((user) => {
+                        return (
+                          <li
+                            key={"member-" + user._id}
+                            className="d-flex gap-2 my-3 align-items-center"
+                          >
+                            <div
+                              className="avatar"
+                              style={{
+                                backgroundImage: `url(${user?.avatar})`,
+                              }}
+                            ></div>
+                            {user.fullName}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <div className="foot_room-infor">
+                      {conversation.membersId[0] === user?._id && (
+                        <button
+                          className="btn_out mb-2"
+                          onClick={() => handleDeleteGroup()}
+                        >
+                          Delete Group <FontAwesomeIcon icon={faTrashCan} />
+                        </button>
+                      )}
+                      <button
+                        className="btn_out"
+                        onClick={() => handleOutGroup()}
+                      >
+                        Out Group{" "}
+                        <FontAwesomeIcon icon={faArrowRightFromBracket} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
       <ListGroup className="list_message px-4 d-flex flex-column-reverse">
         {messages?.map((message, index) => {
@@ -234,14 +370,15 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
           const date = new Date(message.createdAt);
           // const dateOfMessage = handleGetDateOfMessage(date.toDateString());
           const isPointShowDate = checkPointShowDate(date, index);
+          let fullName = allUsersSendMessInGR.find(
+            (userItem) => message.senderId === userItem._id
+          )?.fullName;
+          let avatar = allUsersSendMessInGR.find(
+            (userItem) => message.senderId === userItem._id
+          )?.avatar;
 
           return (
             <>
-              {/* {dateOfMessage && (
-                <div className="date_message" key={`date-${message._id}`}>
-                  {dateOfMessage}
-                </div>
-              )} */}
               <ListGroup.Item
                 key={message?._id}
                 className="message w-75 my-2 d-flex gap-2"
@@ -254,11 +391,7 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
                   <div
                     className="message_avatar"
                     style={{
-                      backgroundImage: `url(${
-                        users.find(
-                          (userItem) => message.senderId === userItem._id
-                        )?.avatar
-                      })`,
+                      backgroundImage: `url(${avatar})`,
                     }}
                   ></div>
                 )}
@@ -267,14 +400,15 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
                     isMyMessage ? "end" : "start"
                   }`}
                 >
+                  {isMyMessage && (
+                    <FontAwesomeIcon
+                      icon={faTrashCan}
+                      className="btn-delete"
+                      onClick={() => handleDeleteMessage(message._id)}
+                    />
+                  )}
                   {!isMyMessage && (
-                    <span className="user_name">
-                      {
-                        users.find(
-                          (userItem) => message.senderId === userItem._id
-                        )?.fullName
-                      }
-                    </span>
+                    <span className="user_name">{fullName}</span>
                   )}
                   <p className="content m-0">{message?.content}</p>
                   <span className="time_mess">
@@ -289,12 +423,6 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
                     : date.toDateString()}
                 </div>
               )}
-              {/* {message.createdAt ===
-                messages[messages.length - 1].createdAt && (
-                <div className="date_message" key={`date-${message._id}`}>
-                  {date.toDateString()}
-                </div>
-              )} */}
             </>
           );
         })}
@@ -319,4 +447,4 @@ const ChatRoom: React.FC<{ conversation: ConversationType | null }> = ({
   );
 };
 
-export default ChatRoom;
+export default React.memo(ChatRoom);

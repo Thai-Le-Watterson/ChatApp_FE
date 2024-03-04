@@ -112,3 +112,52 @@ $height_serach: 40px;
     }
   }
 }
+
+.modal-group {
+  .modal-body {
+    .title {
+      margin: 10px 0 6px;
+      display: block;
+    }
+
+    .avatars {
+      display: flex;
+      justify-content: space-around;
+      padding: 0;
+
+      .avatar {
+        $width: 70px;
+        width: $width;
+        height: $width;
+        list-style: none;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        border-radius: 50%;
+        position: relative;
+        transition: all linear 0.1s;
+        cursor: pointer;
+
+        &.selected::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: calc($width + 10px);
+          height: calc($width + 10px);
+          border: 3px solid #00cff8;
+          border-radius: 50%;
+        }
+      }
+    }
+
+    #group-name {
+      border: 2px solid #999;
+      border-radius: 20px;
+      width: 100%;
+      padding: 6px 10px;
+      outline-color: #00cff8;
+    }
+  }
+}

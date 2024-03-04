@@ -8,6 +8,11 @@ import {
   faBars,
   faCaretDown,
   faArrowRightFromBracket,
+  faUserGroup,
+  faUserPlus,
+  faUserTag,
+  faEnvelope,
+  faEnvelopeOpen,
 } from "@fortawesome/free-solid-svg-icons";
 
 const importIcons = () => {
@@ -19,7 +24,12 @@ const importIcons = () => {
     faPlus,
     faBars,
     faCaretDown,
-    faArrowRightFromBracket
+    faArrowRightFromBracket,
+    faUserGroup,
+    faUserPlus,
+    faUserTag,
+    faEnvelope,
+    faEnvelopeOpen
   );
 };
 

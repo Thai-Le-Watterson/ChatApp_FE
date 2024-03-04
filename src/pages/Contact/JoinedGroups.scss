@@ -1,0 +1,59 @@
+.joined-group_container {
+  width: inherit !important;
+
+  .group-infor {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all linear 0.1s;
+    text-decoration: none;
+
+    &:hover {
+      background-color: rgba($color: #000000, $alpha: 0.1);
+    }
+
+    .avatar {
+      $width: 50px;
+      width: $width;
+      height: $width;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      border-radius: 50%;
+    }
+
+    .name {
+      color: #333;
+      text-decoration: none;
+    }
+  }
+
+  .btn {
+    position: absolute;
+    right: 6px;
+    height: fit-content;
+    color: #0dcaf0;
+    border: 2px solid #0dcaf0;
+    border-radius: 6px;
+    transition: all linear 0.1s;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0dcaf0;
+      color: #fff;
+    }
+
+    &.un {
+      color: #f84949;
+      border-color: #f84949;
+
+      &:hover {
+        background-color: #f84949;
+        color: #fff;
+      }
+    }
+  }
+}

@@ -37,7 +37,7 @@ function Layout() {
         <div className="col-lg-2 col-md-3 p-0" style={{ position: "relative" }}>
           <Sidebar />
         </div>
-        <div className="outlet col-lg-10 col-md-9 p-0 mt-5 mt-sm-5 mt-md-0">
+        <div className="outlet col-lg-10 col-md-9 p-0 mt-5 mt-sm-5 mt-md-0 position-relative">
           <Outlet />
         </div>
       </div>
