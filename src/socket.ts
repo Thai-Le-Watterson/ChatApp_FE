@@ -5,6 +5,6 @@ const serverURL =
     ? process.env.REACT_APP_SERVER_URL
     : process.env.REACT_APP_SERVER_LOCAL;
 
-const socket = io();
+const socket = io(serverURL || "");
 
 export default socket;
